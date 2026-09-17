@@ -1,0 +1,37 @@
+# Normalise line endings.
+#
+# Everything is stored with LF in the repository. Without this, a Windows
+# checkout writes CRLF into files that get mounted into Linux containers
+# (scripts/init_postgis.sql, Dockerfiles, the Makefile), where CRLF breaks
+# shell and make parsing.
+* text=auto eol=lf
+
+# Files that must never gain CRLF, regardless of platform.
+*.sh        text eol=lf
+*.sql       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+Makefile    text eol=lf
+Dockerfile  text eol=lf
+*.mako      text eol=lf
+
+# Windows-only files keep CRLF.
+*.bat       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binary - never touch, never diff.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pdf       binary
+*.woff      binary
+*.woff2     binary
+*.parquet   binary
+
+# Generated lockfiles: collapsed by default in GitHub's diff view, but still
+# diffable locally. Do NOT add `-diff` here - a readable lockfile diff is how a
+# swapped or unexpected dependency gets caught in review.
+uv.lock         linguist-generated=true
+pnpm-lock.yaml  linguist-generated=true

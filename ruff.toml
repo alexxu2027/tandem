@@ -1,0 +1,15 @@
+# Ruff configuration for Python code outside backend/.
+#
+# backend/ has its own [tool.ruff] section in backend/pyproject.toml, which
+# takes precedence for files under that directory. This file covers pipelines/
+# and ml/. Keep the two in sync.
+
+line-length = 100
+target-version = "py311"
+extend-exclude = ["backend", ".venv", "data", "ml/notebooks"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "N", "W", "C4", "SIM"]
+
+[format]
+quote-style = "double"

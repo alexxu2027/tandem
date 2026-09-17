@@ -1,0 +1,150 @@
+# ---------------------------------------------------------------------------
+# Secrets and local environment
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials.json
+service-account*.json
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+sdist/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytype/
+.dmypy.json
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.cache/
+
+# ---------------------------------------------------------------------------
+# Node / frontend
+# ---------------------------------------------------------------------------
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store/
+
+# Next.js build output
+.next/
+out/
+build/
+.swc/
+next-env.d.ts
+*.tsbuildinfo
+.vercel
+
+# Linter caches
+.eslintcache
+
+# ---------------------------------------------------------------------------
+# Local database artifacts
+# ---------------------------------------------------------------------------
+# Compose mounts Postgres data in a named volume, but keep stray local dumps,
+# SQLite files and pgdata directories out of the repository.
+pgdata/
+postgres-data/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+*.bak
+
+# ---------------------------------------------------------------------------
+# Data (never commit datasets - see docs/data.md)
+# ---------------------------------------------------------------------------
+# Ignore the CONTENTS, not the directories themselves: git cannot re-include a
+# file whose parent directory is excluded, so `data/raw/*` (not `data/raw/`) is
+# what lets the .gitkeep and README below survive.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/raw/README.md
+!data/processed/README.md
+*.csv
+*.parquet
+*.feather
+*.zip
+*.gz
+*.tar
+!docs/**/*.csv
+
+# ---------------------------------------------------------------------------
+# ML artifacts and notebooks
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+ml/artifacts/
+models/
+mlruns/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pt
+
+# ---------------------------------------------------------------------------
+# Editors and OS
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# ---------------------------------------------------------------------------
+# Logs and temp
+# ---------------------------------------------------------------------------
+*.log
+logs/
+tmp/
+.tmp/

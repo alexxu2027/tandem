@@ -1,0 +1,16 @@
+Alembic migration environment for the Tandem backend.
+
+The database URL is read from environment variables via app.core.config, not
+from alembic.ini.
+
+Common commands (run from backend/, or use the root Makefile):
+
+    uv run alembic revision --autogenerate -m "add stations table"
+    uv run alembic upgrade head
+    uv run alembic downgrade -1
+    uv run alembic current
+    uv run alembic history
+
+alembic/versions/ is empty until the first domain model is added. The PostGIS
+extension itself is created by the Docker Compose init script
+(scripts/init_postgis.sql), not by a migration.
