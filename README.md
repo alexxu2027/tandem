@@ -21,7 +21,7 @@ end rather than routes that merely look good at the moment you ask.
 | --- | --- |
 | Frontend | Next.js (App Router), TypeScript, Tailwind CSS |
 | Backend | Python, FastAPI, Pydantic, SQLAlchemy, Alembic |
-| Database | PostgreSQL 16 + PostGIS 3.4 |
+| Database | PostgreSQL 16 + PostGIS 3.6 |
 | Python packaging | uv + `pyproject.toml` |
 | Frontend packaging | pnpm |
 | Local infrastructure | Docker + Docker Compose |
@@ -140,8 +140,10 @@ elevated shell. `npm install -g pnpm` works from a normal terminal.
 make up      # docker compose up -d db, then waits until healthy
 ```
 
-This starts `postgis/postgis:16-3.4` on `localhost:5432` with a named volume
-(`tandem_postgres_data`), so data survives restarts.
+This starts `imresamu/postgis:16-3.6-bookworm` on `localhost:5432` with a named
+volume (`tandem_postgres_data`), so data survives restarts. That image is a
+multi-architecture build (amd64 + arm64), so the same compose file works on
+Intel and Apple/Snapdragon ARM hosts without a `platform:` override.
 `scripts/init_postgis.sql` runs on first creation: it enables `postgis`,
 `postgis_topology` and `pg_trgm`, and pins the database to UTC.
 

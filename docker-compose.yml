@@ -9,7 +9,10 @@ name: tandem
 
 services:
   db:
-    image: postgis/postgis:16-3.4
+    # Multi-architecture image (linux/amd64 + linux/arm64). Deliberately no
+    # `platform:` directive: Docker resolves the right variant per host, so
+    # amd64 and arm64 developers share one compose file.
+    image: imresamu/postgis:16-3.6-bookworm
     container_name: tandem-db
     restart: unless-stopped
     environment:

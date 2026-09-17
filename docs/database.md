@@ -1,6 +1,7 @@
 # Database
 
-PostgreSQL 16 with PostGIS 3.4, run locally through Docker Compose.
+PostgreSQL 16 with PostGIS 3.6, run locally through Docker Compose using the
+multi-architecture `imresamu/postgis:16-3.6-bookworm` image (amd64 + arm64).
 
 ## Starting it
 
@@ -48,7 +49,7 @@ Verify the extension is live:
 
 ```bash
 curl -s localhost:8000/health/db
-# {"status":"ok","database":"reachable","postgis":"3.4 USE_GEOS=1 ..."}
+# {"status":"ok","database":"reachable","postgis":"3.6 USE_GEOS=1 ..."}
 ```
 
 ## Migrations

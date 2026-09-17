@@ -1,6 +1,6 @@
 -- Runs once, when the Postgres data volume is first initialized.
 --
--- The postgis/postgis image already installs the extension binaries; this
+-- The PostGIS image already installs the extension binaries; this
 -- enables them inside the Tandem database. Keep extension management here
 -- rather than in an Alembic migration so that migrations stay portable and do
 -- not need superuser privileges.
