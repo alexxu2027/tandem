@@ -59,7 +59,10 @@ jobs:
         working-directory: backend
     services:
       postgres:
-        image: postgis/postgis:16-3.4
+        # Must match the image in docker-compose.yml: migrations and
+        # `alembic check` need to run against the same PostGIS minor that
+        # developers use locally, or spatial DDL can pass here and fail there.
+        image: imresamu/postgis:16-3.6-bookworm
         env:
           POSTGRES_USER: tandem
           POSTGRES_PASSWORD: tandem
