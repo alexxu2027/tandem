@@ -18,7 +18,9 @@ export type Health = {
  */
 export async function fetchHealth(): Promise<Health | null> {
   try {
-    const response = await fetch(`${env.apiBaseUrl}/health`, {
+    const baseUrl =
+      typeof window === "undefined" ? env.serverApiBaseUrl : env.apiBaseUrl;
+    const response = await fetch(`${baseUrl}/health`, {
       cache: "no-store",
     });
     if (!response.ok) return null;

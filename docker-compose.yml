@@ -71,7 +71,11 @@ services:
     container_name: tandem-frontend
     restart: unless-stopped
     environment:
+      # Reached by the browser, which is on the host, not the Compose network.
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      # Reached by Next.js server-side rendering, which runs in this container,
+      # where `localhost` is the frontend itself.
+      API_BASE_URL_INTERNAL: http://backend:8000
       NODE_ENV: development
       TZ: UTC
     ports:

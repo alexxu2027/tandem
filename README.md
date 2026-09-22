@@ -84,25 +84,32 @@ GNU Make, or run the underlying commands directly. See
 
 ### Verification status of this scaffold
 
-This commit was built and checked on Windows 11 with Git Bash. Not everything
-could be executed here, so be explicit about what is proven:
+This scaffold was built and checked on Windows 11 (arm64) with Git Bash, and
+the Docker paths were executed with Docker Desktop 29.8.0. Be explicit about
+what is proven:
 
 | Area | Status |
 | --- | --- |
 | `uv sync`, `pytest` (8 tests), Ruff lint + format | **Verified** — passing |
 | `pnpm install`, ESLint, `tsc --noEmit`, `next build` | **Verified** — passing |
 | Backend served, `GET /health` and `GET /health/db` | **Verified** — correct responses |
-| Frontend server-rendering live backend health | **Verified** |
+| Frontend server-rendering live backend health | **Verified** — bare metal and in Compose |
 | `cp .env.example .env` then loading settings | **Verified** |
-| Alembic environment (offline mode) | **Verified** — loads, 0 revisions |
-| **Docker / `docker-compose.yml` / both Dockerfiles** | **Unverified locally** — Docker is not installed on this machine |
+| Alembic environment | **Verified** — offline, and `upgrade head` against the live database |
+| `docker compose up -d db`, PostGIS extensions, UTC | **Verified** — healthy, PostGIS 3.6.1 on PostgreSQL 16 |
+| `docker compose --profile app up --build` | **Verified** — both images build and serve on arm64 |
 | **`make` targets** | **Unverified locally** — GNU Make is not installed on this machine |
 
-The compose file and CI workflow were parsed as YAML and every path they
-reference was confirmed to exist, and the Makefile's recipe lines were checked
-for real tab indentation — but none of it has been *run*. Treat the Docker and
-`make` paths as unproven until someone executes them; every `make` target has a
-plain-command equivalent below that **has** been run.
+The database, the backend image and the frontend image have now all been run.
+The compose `app` profile surfaced one real defect, since fixed: the frontend
+container server-rendered `Backend unreachable`, because `NEXT_PUBLIC_API_BASE_URL`
+is `localhost:8000` and inside that container `localhost` is the frontend
+itself. Server-side fetches now use `API_BASE_URL_INTERNAL`
+(`http://backend:8000` in Compose, unset elsewhere).
+
+The Makefile's recipe lines were checked for real tab indentation, but no
+target has been *run*; every `make` target has a plain-command equivalent below
+that **has** been.
 
 ## Local setup
 
@@ -130,11 +137,6 @@ fails with `EPERM` when Node lives in `C:\Program Files\nodejs` without an
 elevated shell. `npm install -g pnpm` works from a normal terminal.
 
 ## Start PostgreSQL + PostGIS
-
-> **Unverified locally.** Docker is not installed on the machine this scaffold
-> was built on, so nothing in this section has been executed yet. The first
-> thing to do is install Docker Desktop and confirm `GET /health/db` flips from
-> `{"status":"error","database":"unreachable"}` to a healthy response.
 
 ```bash
 make up      # docker compose up -d db, then waits until healthy
