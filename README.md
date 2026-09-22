@@ -1,5 +1,7 @@
 # Tandem
 
+[![CI](https://github.com/alexxu2027/tandem/actions/workflows/ci.yml/badge.svg)](https://github.com/alexxu2027/tandem/actions/workflows/ci.yml)
+
 Predictive Citi Bike navigation for New York City.
 
 A rider needs to know whether a bike will be there when they **arrive**, not
@@ -95,7 +97,7 @@ what is proven:
 | Backend served, `GET /health` and `GET /health/db` | **Verified** — correct responses |
 | Frontend server-rendering live backend health | **Verified** — bare metal and in Compose |
 | `cp .env.example .env` then loading settings | **Verified** |
-| Alembic environment | **Verified** — offline, and `upgrade head` against the live database |
+| Alembic environment | **Verified** — `upgrade head` offline and online, `alembic check` clean |
 | `docker compose up -d db`, PostGIS extensions, UTC | **Verified** — healthy, PostGIS 3.6.1 on PostgreSQL 16 |
 | `docker compose --profile app up --build` | **Verified** — both images build and serve on arm64 |
 | **`make` targets** | **Unverified locally** — GNU Make is not installed on this machine |
@@ -110,6 +112,8 @@ itself. Server-side fetches now use `API_BASE_URL_INTERNAL`
 The Makefile's recipe lines were checked for real tab indentation, but no
 target has been *run*; every `make` target has a plain-command equivalent below
 that **has** been.
+
+CI passes on GitHub Actions — all three jobs green on `main`.
 
 ## Local setup
 
