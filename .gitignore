@@ -120,7 +120,10 @@ data/processed/*
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 ml/artifacts/
-models/
+# Trained-model artifacts only. NOT anchored as bare `models/`, which also
+# matches backend/app/models/ — the SQLAlchemy ORM package Alembic imports.
+/models/
+ml/models/
 mlruns/
 *.pkl
 *.joblib
