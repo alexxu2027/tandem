@@ -1,8 +1,11 @@
 name: Collect Citi Bike availability
 
 # Citi Bike does not keep a history of station availability, so Tandem records
-# it. Each hourly run takes a snapshot every 5 minutes for ~55 minutes and
-# commits the CSVs to the tandem-data repository.
+# it. Each run takes a snapshot every 5 minutes for ~55 minutes, commits the
+# CSVs to the tandem-data repository, then starts the next run.
+#
+# To stop collecting: Actions tab -> this workflow -> "..." -> Disable workflow.
+# To restart: enable it, then "Run workflow" (or wait for the hourly schedule).
 #
 # Setup (already done for alexxu2027/tandem; repeat if this repo moves):
 #   1. Create the data repo, e.g. alexxu2027/tandem-data.
@@ -12,8 +15,10 @@ name: Collect Citi Bike availability
 #   5. If the data repo name differs, set the repository variable TANDEM_DATA_REPO.
 
 on:
+  # Backup only. Each run starts the next one (last step below), because
+  # GitHub's scheduler can skip or delay runs for hours. If that chain ever
+  # breaks, this restarts it. Off the top of the hour, when the scheduler is busiest.
   schedule:
-    # Off the top of the hour, when GitHub's scheduler is busiest.
     - cron: "17 * * * *"
   workflow_dispatch:
     inputs:
@@ -21,14 +26,17 @@ on:
         description: "How long to collect for"
         default: "55"
 
-# One run at a time: a delayed run waits for the previous one instead of
+# One run at a time: a new run waits for the current one instead of
 # overlapping it, so snapshots stay on the 5-minute grid without duplicates.
+# GitHub keeps at most one waiting run per group, so the schedule and the chain
+# can never pile up into parallel chains.
 concurrency:
   group: collect-citibike
   cancel-in-progress: false
 
 permissions:
   contents: read
+  actions: write # to start the next run
 
 env:
   TZ: UTC
@@ -39,6 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 75
     steps:
+      - name: Note the start time
+        run: echo "STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
 
       # Only today's station file is needed (it gets merged); status files are
@@ -80,3 +91,15 @@ jobs:
           git commit -q -m "data(citibike): $(date -u +%Y-%m-%dT%H:%MZ) snapshots"
           git pull -q --rebase
           git push -q
+
+      # Not on cancel: cancelling a run by hand stops the chain. A run that failed
+      # fast (e.g. Citi Bike down) waits first, so retries come every 10 minutes
+      # rather than in a tight loop.
+      - name: Start the next run
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          remaining=$(( STARTED_AT + 600 - $(date +%s) ))
+          if [ "$remaining" -gt 0 ]; then sleep "$remaining"; fi
+          gh workflow run collect-citibike.yml --repo "$GITHUB_REPOSITORY" --ref main

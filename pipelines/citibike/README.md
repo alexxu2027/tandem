@@ -42,9 +42,15 @@ Files land in `data/` (not committed to git):
 ## Automatic collection
 
 [`.github/workflows/collect-citibike.yml`](../../.github/workflows/collect-citibike.yml)
-runs every hour on GitHub Actions and saves to
-[alexxu2027/tandem-data](https://github.com/alexxu2027/tandem-data). You can
-watch the runs in this repository's **Actions** tab.
+runs continuously on GitHub Actions and saves to
+[alexxu2027/tandem-data](https://github.com/alexxu2027/tandem-data). Each run
+collects for about an hour, saves, then starts the next run. You can watch the
+runs in this repository's **Actions** tab.
+
+**It keeps running until someone turns it off.** To stop it: Actions tab →
+"Collect Citi Bike availability" → "..." menu → **Disable workflow**. To restart:
+enable it, then click **Run workflow**. If runs start failing (GitHub emails you
+about each one), disable it until it's fixed.
 
 It uses `--changes-only`: after the first snapshot in each file, a station only
 gets a new row when its numbers change. To get a station's availability at any
