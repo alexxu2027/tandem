@@ -6,5 +6,5 @@ Planned scope:
   a short interval to build the availability history.
 - Monthly historical trip archives for training data.
 
-Not implemented yet.
+The live feed collector is in ``gbfs.py``; trip archives are not implemented yet.
 """

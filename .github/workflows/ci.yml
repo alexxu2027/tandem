@@ -51,6 +51,10 @@ jobs:
       - name: Run tests
         run: uv run pytest -v
 
+      - name: Run pipeline tests
+        working-directory: .
+        run: uv run --project backend python -m pytest pipelines -v
+
   migrations:
     name: Migrations (PostGIS)
     runs-on: ubuntu-latest

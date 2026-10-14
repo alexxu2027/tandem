@@ -1,0 +1,82 @@
+name: Collect Citi Bike availability
+
+# Citi Bike does not keep a history of station availability, so Tandem records
+# it. Each hourly run takes a snapshot every 5 minutes for ~55 minutes and
+# commits the CSVs to the tandem-data repository.
+#
+# Setup (already done for alexxu2027/tandem; repeat if this repo moves):
+#   1. Create the data repo, e.g. alexxu2027/tandem-data.
+#   2. ssh-keygen -t ed25519 -N "" -f deploy_key
+#   3. Add deploy_key.pub to the data repo as a deploy key WITH write access.
+#   4. Add the private key to this repo as the secret TANDEM_DATA_DEPLOY_KEY.
+#   5. If the data repo name differs, set the repository variable TANDEM_DATA_REPO.
+
+on:
+  schedule:
+    # Off the top of the hour, when GitHub's scheduler is busiest.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "How long to collect for"
+        default: "55"
+
+# One run at a time: a delayed run waits for the previous one instead of
+# overlapping it, so snapshots stay on the 5-minute grid without duplicates.
+concurrency:
+  group: collect-citibike
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TZ: UTC
+  DATA_REPO: ${{ vars.TANDEM_DATA_REPO || 'alexxu2027/tandem-data' }}
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only today's station file is needed (it gets merged); status files are
+      # new each run, so the rest of the history is never downloaded.
+      - name: Check out the data repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DATA_REPO }}
+          ssh-key: ${{ secrets.TANDEM_DATA_DEPLOY_KEY }}
+          path: tandem-data
+          fetch-depth: 1
+          sparse-checkout: citibike/stations
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect snapshots
+        run: >-
+          python -m pipelines.citibike.gbfs collect
+          --every 5
+          --minutes ${{ inputs.minutes || '55' }}
+          --changes-only
+          --no-raw
+          --out tandem-data
+
+      # Runs even if collection failed part-way, so nothing collected is lost.
+      - name: Commit to the data repository
+        if: always()
+        working-directory: tandem-data
+        run: |
+          git add --sparse citibike
+          if git diff --cached --quiet; then
+            echo "Nothing collected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "data(citibike): $(date -u +%Y-%m-%dT%H:%MZ) snapshots"
+          git pull -q --rebase
+          git push -q

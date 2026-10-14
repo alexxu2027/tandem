@@ -1,12 +1,12 @@
 # Pipelines
 
-Data ingestion. One package per external source. **Nothing here is implemented
-yet** — these are placeholders that fix the module boundaries before the code
-arrives.
+Data ingestion. One package per external source. Only the Citi Bike live feed
+collector exists so far; the rest are placeholders that fix the module
+boundaries before the code arrives.
 
 | Package | Source | Status |
 | --- | --- | --- |
-| `citibike/` | GBFS real-time feeds + historical trip archives | Placeholder |
+| `citibike/` | GBFS real-time feeds + historical trip archives | Live feed collected hourly ([guide](citibike/README.md)); trips not yet |
 | `weather/` | NYC observations and short-range forecasts | Placeholder |
 | `nyc_open_data/` | Bike lanes, street centrelines (Socrata) | Placeholder |
 | `incidents/` | Service alerts, closures, collisions | Placeholder |
